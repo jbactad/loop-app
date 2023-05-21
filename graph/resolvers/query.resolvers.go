@@ -8,13 +8,33 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jbactad/loop/application/queries"
 	"github.com/jbactad/loop/graph/generated"
+	"github.com/jbactad/loop/graph/mappers"
 	"github.com/jbactad/loop/graph/models"
+	"github.com/mehdihadeli/go-mediatr"
 )
 
 // Surveys is the resolver for the surveys field.
-func (r *queryResolver) Surveys(ctx context.Context) ([]*models.Survey, error) {
-	panic(fmt.Errorf("not implemented: Surveys - surveys"))
+func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*models.Survey, error) {
+	if limit == nil {
+		limit = new(int)
+		*limit = 10
+	}
+	if page == nil {
+		page = new(int)
+		*page = 0
+	}
+	result, err := mediatr.Send[queries.GetSurveysQuery, queries.GetSurveysQueryResponse](ctx, queries.GetSurveysQuery{
+		Limit: *limit,
+		Page:  *page,
+	})
+	if err != nil {
+		return nil, err
+	}
+	surveys := mappers.SurveysToSurveysResponse(result.Surveys)
+
+	return surveys, nil
 }
 
 // Survey is the resolver for the survey field.

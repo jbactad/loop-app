@@ -1,11 +1,32 @@
 package domain
 
+import "time"
+
 type Survey struct {
-	id              string
-	name            string
-	description     string
-	question        string
-	surveyResponses []*SurveyResponse
+	id          string
+	name        string
+	description string
+	question    string
+	createdAt   time.Time
+	updatedAt   time.Time
+}
+
+func NewSurvey(
+	id string,
+	name string,
+	description string,
+	question string,
+	createdAt time.Time,
+	updatedAt time.Time,
+) *Survey {
+	return &Survey{
+		id:          id,
+		name:        name,
+		description: description,
+		question:    question,
+		createdAt:   createdAt,
+		updatedAt:   updatedAt,
+	}
 }
 
 func (s *Survey) ID() string {
@@ -24,31 +45,39 @@ func (s *Survey) Question() string {
 	return s.question
 }
 
-func (s *Survey) SurveyResponses() []*SurveyResponse {
-	return s.surveyResponses
+func (s *Survey) CreatedAt() time.Time {
+	return s.createdAt
 }
 
-func (s *Survey) SetName(name string) {
-	s.name = name
-}
-
-func (s *Survey) SetDescription(description string) {
-	s.description = description
-}
-
-func (s *Survey) SetQuestion(question string) {
-	s.question = question
-}
-
-func (s *Survey) AddSurveyResponse(surveyResponse *SurveyResponse) {
-	s.surveyResponses = append(s.surveyResponses, surveyResponse)
+func (s *Survey) UpdatedAt() time.Time {
+	return s.updatedAt
 }
 
 type SurveyResponse struct {
-	id     string
-	survey *Survey
-	answer string
-	rating int
+	id        string
+	survey    *Survey
+	answer    string
+	rating    int
+	createdAt time.Time
+	updatedAt time.Time
+}
+
+func NewSurveyResponse(
+	id string,
+	survey *Survey,
+	answer string,
+	rating int,
+	createdAt time.Time,
+	updatedAt time.Time,
+) *SurveyResponse {
+	return &SurveyResponse{
+		id:        id,
+		survey:    survey,
+		answer:    answer,
+		rating:    rating,
+		createdAt: createdAt,
+		updatedAt: updatedAt,
+	}
 }
 
 func (s *SurveyResponse) ID() string {
@@ -65,4 +94,12 @@ func (s *SurveyResponse) Answer() string {
 
 func (s *SurveyResponse) Rating() int {
 	return s.rating
+}
+
+func (s *SurveyResponse) CreatedAt() time.Time {
+	return s.createdAt
+}
+
+func (s *SurveyResponse) UpdatedAt() time.Time {
+	return s.updatedAt
 }

@@ -56,7 +56,7 @@ type ComplexityRoot struct {
 		Survey          func(childComplexity int, id string) int
 		SurveyResponse  func(childComplexity int, id string) int
 		SurveyResponses func(childComplexity int) int
-		Surveys         func(childComplexity int) int
+		Surveys         func(childComplexity int, limit *int, page *int) int
 	}
 
 	Subscription struct {
@@ -84,7 +84,7 @@ type MutationResolver interface {
 	CreateSurveyResponse(ctx context.Context, input models.NewSurveyResponse) (*models.SurveyResponse, error)
 }
 type QueryResolver interface {
-	Surveys(ctx context.Context) ([]*models.Survey, error)
+	Surveys(ctx context.Context, limit *int, page *int) ([]*models.Survey, error)
 	Survey(ctx context.Context, id string) (*models.Survey, error)
 	SurveyResponses(ctx context.Context) ([]*models.SurveyResponse, error)
 	SurveyResponse(ctx context.Context, id string) (*models.SurveyResponse, error)
@@ -169,7 +169,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Surveys(childComplexity), true
+		args, err := ec.field_Query_surveys_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Surveys(childComplexity, args["limit"].(*int), args["page"].(*int)), true
 
 	case "Subscription.surveyCreated":
 		if e.complexity.Subscription.SurveyCreated == nil {
@@ -347,7 +352,7 @@ input NewSurveyResponse {
 `, BuiltIn: false},
 	{Name: "../schemas/query.graphqls", Input: `
 type Query {
-    surveys: [Survey!]!
+    surveys(limit: Int, page: Int): [Survey!]!
     survey(id: ID!): Survey!
     surveyResponses: [SurveyResponse!]!
     surveyResponse(id: ID!): SurveyResponse!
@@ -473,6 +478,30 @@ func (ec *executionContext) field_Query_survey_args(ctx context.Context, rawArgs
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_surveys_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["page"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["page"] = arg1
 	return args, nil
 }
 
@@ -706,7 +735,7 @@ func (ec *executionContext) _Query_surveys(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Surveys(rctx)
+		return ec.resolvers.Query().Surveys(rctx, fc.Args["limit"].(*int), fc.Args["page"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -742,6 +771,17 @@ func (ec *executionContext) fieldContext_Query_surveys(ctx context.Context, fiel
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_surveys_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -4524,6 +4564,22 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt(*v)
 	return res
 }
 

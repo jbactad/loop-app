@@ -1,6 +1,6 @@
 
 type Query {
-    surveys: [Survey!]!
+    surveys(limit: Int, page: Int): [Survey!]!
     survey(id: ID!): Survey!
     surveyResponses: [SurveyResponse!]!
     surveyResponse(id: ID!): SurveyResponse!
