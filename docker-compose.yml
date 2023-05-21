@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  # database with volume
+  db:
+    image: postgres:13.3-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - ${DB_PORT-5432}:5432
+
+volumes:
+  db-data: ~
+  

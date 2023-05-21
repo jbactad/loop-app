@@ -1,0 +1,28 @@
+
+type Query {
+    surveys: [Survey!]!
+    survey(id: ID!): Survey!
+    surveyResponses: [SurveyResponse!]!
+    surveyResponse(id: ID!): SurveyResponse!
+}
+
+type Survey {
+    id: ID!
+    name: String!
+    description: String!
+    question: String!
+}
+
+type SurveyResponse {
+    id: ID!
+    survey: Survey!
+    answer: String!
+    rating: Int!
+}
+
+enum Role {
+    MANAGER
+    EMPLOYEE
+}
+
+directive @hasRole(role: Role!) on FIELD_DEFINITION

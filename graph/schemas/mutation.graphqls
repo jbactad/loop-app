@@ -1,0 +1,16 @@
+type Mutation {
+    createSurvey(input: NewSurvey!): Survey! @hasRole(role: MANAGER)
+    createSurveyResponse(input: NewSurveyResponse!): SurveyResponse! @hasRole(role: EMPLOYEE)
+}
+
+input NewSurvey {
+    name: String!
+    description: String!
+    question: String!
+}
+
+input NewSurveyResponse {
+    surveyId: ID!
+    answers: String!
+    rating: Int!
+}
