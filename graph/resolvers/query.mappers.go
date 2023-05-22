@@ -1,4 +1,4 @@
-package mappers
+package resolvers
 
 import (
 	"github.com/jbactad/loop/domain"
@@ -20,5 +20,7 @@ func SurveyToResponse(survey *domain.Survey) *models.Survey {
 		Name:        survey.Name(),
 		Question:    survey.Question(),
 		Description: survey.Description(),
+		CreatedAt:   survey.CreatedAt(),
+		UpdatedAt:   survey.UpdatedAt(),
 	}
 }

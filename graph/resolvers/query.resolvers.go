@@ -10,9 +10,7 @@ import (
 
 	"github.com/jbactad/loop/application/queries"
 	"github.com/jbactad/loop/graph/generated"
-	"github.com/jbactad/loop/graph/mappers"
 	"github.com/jbactad/loop/graph/models"
-	"github.com/mehdihadeli/go-mediatr"
 )
 
 // Surveys is the resolver for the surveys field.
@@ -25,14 +23,18 @@ func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*
 		page = new(int)
 		*page = 0
 	}
-	result, err := mediatr.Send[queries.GetSurveysQuery, queries.GetSurveysQueryResponse](ctx, queries.GetSurveysQuery{
-		Limit: *limit,
-		Page:  *page,
-	})
+	result, err := r.QueryUseCases.GetSurveys(
+		ctx,
+		queries.GetSurveysQuery{
+			Limit: *limit,
+			Page:  *page,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
-	surveys := mappers.SurveysToSurveysResponse(result.Surveys)
+
+	surveys := SurveysToSurveysResponse(result.Surveys)
 
 	return surveys, nil
 }

@@ -32,7 +32,8 @@ func (repo *SurveyRepository) GetSurveys(
 		Table("surveys").
 		Limit(limit).
 		Offset(offset).
-		Find(&surveyDatas).Error
+		Find(&surveyDatas).
+		Error()
 	if err != nil {
 		return nil, err
 	}

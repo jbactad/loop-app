@@ -2,23 +2,30 @@ package queries_test
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/golang/mock/gomock"
-	"github.com/jbactad/loop/application/ports/mock"
+	"github.com/jbactad/loop/application/ports/mocks"
 	"github.com/jbactad/loop/application/queries"
 	"github.com/jbactad/loop/domain"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-func TestHandle_GetSurveys(t *testing.T) {
-	testCases := []struct {
-		name      string
-		query     queries.GetSurveysQuery
-		wantError assert.ErrorAssertionFunc
-		setup     func(sp *mock.MockSurveyProvider)
-		want      queries.GetSurveysQueryResponse
+func TestQueries_GetSurveys(t *testing.T) {
+	var surveysTestData []*domain.Survey
+	err := faker.FakeData(&surveysTestData)
+	if err != nil {
+		t.Error(err)
+	}
+	ctx := context.Background()
+	tests := []struct {
+		name    string
+		query   queries.GetSurveysQuery
+		want    queries.GetSurveysQueryResponse
+		wantErr bool
+		setup   func(sp *mocks.SurveyProvider)
 	}{
 		{
 			name: "with valid query, it should return surveys without error",
@@ -26,27 +33,15 @@ func TestHandle_GetSurveys(t *testing.T) {
 				Limit: 10,
 				Page:  0,
 			},
-			setup: func(sp *mock.MockSurveyProvider) {
-				sp.EXPECT().GetSurveys(gomock.AssignableToTypeOf(context.Background()), 10, 0).Return(func() []*domain.Survey {
-					surveys, err := SurveysTestData()
-					if err != nil {
-						t.Error(err)
-					}
-
-					return surveys
-				}(), nil)
+			setup: func(sp *mocks.SurveyProvider) {
+				sp.EXPECT().
+					GetSurveys(mock.IsType(context.Background()), 10, 0).
+					Return(surveysTestData, nil)
 			},
-			wantError: assert.NoError,
 			want: queries.GetSurveysQueryResponse{
-				Surveys: func() []*domain.Survey {
-					surveys, err := SurveysTestData()
-					if err != nil {
-						t.Error(err)
-					}
-
-					return surveys
-				}(),
+				Surveys: surveysTestData,
 			},
+			wantErr: false,
 		},
 		{
 			name: "with invalid query, it should return error",
@@ -54,10 +49,7 @@ func TestHandle_GetSurveys(t *testing.T) {
 				Limit: -1,
 				Page:  -1,
 			},
-			setup: func(sp *mock.MockSurveyProvider) {
-				sp.EXPECT().GetSurveys(gomock.Any(), gomock.Any(), gomock.Any()).Times(0)
-			},
-			wantError: assert.Error,
+			wantErr: true,
 		},
 		{
 			name: "with error from provider, it should return error",
@@ -65,46 +57,32 @@ func TestHandle_GetSurveys(t *testing.T) {
 				Limit: 10,
 				Page:  0,
 			},
-			setup: func(sp *mock.MockSurveyProvider) {
-				sp.EXPECT().GetSurveys(gomock.AssignableToTypeOf(context.Background()), 10, 0).
+			setup: func(sp *mocks.SurveyProvider) {
+				sp.EXPECT().
+					GetSurveys(mock.IsType(context.Background()), 10, 0).
 					Return(nil, assert.AnError)
 			},
-			wantError: assert.Error,
+			wantErr: true,
 		},
 	}
-	for _, tC := range testCases {
-		t.Run(tC.name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			surveyProvider := mock.NewMockSurveyProvider(ctrl)
-
-			if tC.setup != nil {
-				tC.setup(surveyProvider)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sp := mocks.NewSurveyProvider(t)
+			if tt.setup != nil {
+				tt.setup(sp)
 			}
 
-			handler := queries.NewGetSurveysQueryHandler(surveyProvider)
+			qs := queries.New(sp)
 
-			got, err := handler.Handle(context.Background(), tC.query)
-			if tC.wantError(t, err) == true {
+			got, err := qs.GetSurveys(ctx, tt.query)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Queries.GetSurveys() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-
-			assert.Equal(t, tC.want, got)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Queries.GetSurveys() = %v, want %v", got, tt.want)
+			}
 		})
 	}
-}
-
-var surveysTestData []*domain.Survey
-
-func SurveysTestData() (surveys []*domain.Survey, err error) {
-	if surveysTestData != nil {
-		return surveysTestData, nil
-	}
-
-	err = faker.FakeData(&surveys)
-	if err != nil {
-		return nil, err
-	}
-	surveysTestData = surveys
-
-	return surveys, nil
 }

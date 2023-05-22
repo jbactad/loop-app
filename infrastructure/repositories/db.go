@@ -1,18 +1,18 @@
 package repositories
 
-import "gorm.io/gorm"
-
+//go:generate mockery --name=Database --output=./mocks --outpkg=mocks --with-expecter
 type Database interface {
+	Error() error
 	Shutdown() error
-	Find(dest interface{}, conds ...interface{}) *gorm.DB
-	First(dest interface{}, conds ...interface{}) *gorm.DB
-	Create(value interface{}) *gorm.DB
-	Save(value interface{}) *gorm.DB
-	Delete(value interface{}) *gorm.DB
-	Where(query interface{}, args ...interface{}) *gorm.DB
-	Order(value interface{}) *gorm.DB
-	Limit(limit int) *gorm.DB
-	Offset(offset int) *gorm.DB
-	Preload(query string, args ...interface{}) *gorm.DB
-	Table(name string, args ...interface{}) *gorm.DB
+	Find(dest interface{}, conds ...interface{}) Database
+	First(dest interface{}, conds ...interface{}) Database
+	Create(value interface{}) Database
+	Save(value interface{}) Database
+	Delete(value interface{}) Database
+	Where(query interface{}, args ...interface{}) Database
+	Order(value interface{}) Database
+	Limit(limit int) Database
+	Offset(offset int) Database
+	Preload(query string, args ...interface{}) Database
+	Table(name string, args ...interface{}) Database
 }

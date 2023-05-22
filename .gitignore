@@ -22,3 +22,4 @@ go.work
 loop
 
 __debug_bin
+**/mocks/

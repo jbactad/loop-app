@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -65,17 +66,21 @@ type ComplexityRoot struct {
 	}
 
 	Survey struct {
+		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
 		Question    func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	SurveyResponse struct {
-		Answer func(childComplexity int) int
-		ID     func(childComplexity int) int
-		Rating func(childComplexity int) int
-		Survey func(childComplexity int) int
+		Answer    func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Rating    func(childComplexity int) int
+		Survey    func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 }
 
@@ -190,6 +195,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.SurveyResponseCreated(childComplexity), true
 
+	case "Survey.createdAt":
+		if e.complexity.Survey.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Survey.CreatedAt(childComplexity), true
+
 	case "Survey.description":
 		if e.complexity.Survey.Description == nil {
 			break
@@ -218,12 +230,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Survey.Question(childComplexity), true
 
+	case "Survey.updatedAt":
+		if e.complexity.Survey.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Survey.UpdatedAt(childComplexity), true
+
 	case "SurveyResponse.answer":
 		if e.complexity.SurveyResponse.Answer == nil {
 			break
 		}
 
 		return e.complexity.SurveyResponse.Answer(childComplexity), true
+
+	case "SurveyResponse.createdAt":
+		if e.complexity.SurveyResponse.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SurveyResponse.CreatedAt(childComplexity), true
 
 	case "SurveyResponse.id":
 		if e.complexity.SurveyResponse.ID == nil {
@@ -245,6 +271,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.SurveyResponse.Survey(childComplexity), true
+
+	case "SurveyResponse.updatedAt":
+		if e.complexity.SurveyResponse.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.SurveyResponse.UpdatedAt(childComplexity), true
 
 	}
 	return 0, false
@@ -363,6 +396,8 @@ type Survey {
     name: String!
     description: String!
     question: String!
+    createdAt: Time!
+    updatedAt: Time!
 }
 
 type SurveyResponse {
@@ -370,6 +405,8 @@ type SurveyResponse {
     survey: Survey!
     answer: String!
     rating: Int!
+    createdAt: Time!
+    updatedAt: Time!
 }
 
 enum Role {
@@ -378,6 +415,8 @@ enum Role {
 }
 
 directive @hasRole(role: Role!) on FIELD_DEFINITION
+`, BuiltIn: false},
+	{Name: "../schemas/scalar.graphqls", Input: `scalar Time
 `, BuiltIn: false},
 	{Name: "../schemas/subscription.graphqls", Input: `type Subscription {
     surveyCreated: Survey!
@@ -614,6 +653,10 @@ func (ec *executionContext) fieldContext_Mutation_createSurvey(ctx context.Conte
 				return ec.fieldContext_Survey_description(ctx, field)
 			case "question":
 				return ec.fieldContext_Survey_question(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Survey_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Survey_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
@@ -703,6 +746,10 @@ func (ec *executionContext) fieldContext_Mutation_createSurveyResponse(ctx conte
 				return ec.fieldContext_SurveyResponse_answer(ctx, field)
 			case "rating":
 				return ec.fieldContext_SurveyResponse_rating(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_SurveyResponse_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_SurveyResponse_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SurveyResponse", field.Name)
 		},
@@ -768,6 +815,10 @@ func (ec *executionContext) fieldContext_Query_surveys(ctx context.Context, fiel
 				return ec.fieldContext_Survey_description(ctx, field)
 			case "question":
 				return ec.fieldContext_Survey_question(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Survey_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Survey_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
@@ -833,6 +884,10 @@ func (ec *executionContext) fieldContext_Query_survey(ctx context.Context, field
 				return ec.fieldContext_Survey_description(ctx, field)
 			case "question":
 				return ec.fieldContext_Survey_question(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Survey_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Survey_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
@@ -898,6 +953,10 @@ func (ec *executionContext) fieldContext_Query_surveyResponses(ctx context.Conte
 				return ec.fieldContext_SurveyResponse_answer(ctx, field)
 			case "rating":
 				return ec.fieldContext_SurveyResponse_rating(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_SurveyResponse_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_SurveyResponse_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SurveyResponse", field.Name)
 		},
@@ -952,6 +1011,10 @@ func (ec *executionContext) fieldContext_Query_surveyResponse(ctx context.Contex
 				return ec.fieldContext_SurveyResponse_answer(ctx, field)
 			case "rating":
 				return ec.fieldContext_SurveyResponse_rating(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_SurveyResponse_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_SurveyResponse_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SurveyResponse", field.Name)
 		},
@@ -1160,6 +1223,10 @@ func (ec *executionContext) fieldContext_Subscription_surveyCreated(ctx context.
 				return ec.fieldContext_Survey_description(ctx, field)
 			case "question":
 				return ec.fieldContext_Survey_question(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Survey_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Survey_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
@@ -1228,6 +1295,10 @@ func (ec *executionContext) fieldContext_Subscription_surveyResponseCreated(ctx 
 				return ec.fieldContext_SurveyResponse_answer(ctx, field)
 			case "rating":
 				return ec.fieldContext_SurveyResponse_rating(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_SurveyResponse_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_SurveyResponse_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type SurveyResponse", field.Name)
 		},
@@ -1411,6 +1482,94 @@ func (ec *executionContext) fieldContext_Survey_question(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Survey_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Survey) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Survey_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Survey_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Survey",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Survey_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Survey) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Survey_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Survey_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Survey",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SurveyResponse_id(ctx context.Context, field graphql.CollectedField, obj *models.SurveyResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_SurveyResponse_id(ctx, field)
 	if err != nil {
@@ -1502,6 +1661,10 @@ func (ec *executionContext) fieldContext_SurveyResponse_survey(ctx context.Conte
 				return ec.fieldContext_Survey_description(ctx, field)
 			case "question":
 				return ec.fieldContext_Survey_question(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Survey_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Survey_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Survey", field.Name)
 		},
@@ -1592,6 +1755,94 @@ func (ec *executionContext) fieldContext_SurveyResponse_rating(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SurveyResponse_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.SurveyResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SurveyResponse_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SurveyResponse_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SurveyResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SurveyResponse_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.SurveyResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SurveyResponse_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SurveyResponse_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SurveyResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3714,6 +3965,20 @@ func (ec *executionContext) _Survey(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createdAt":
+
+			out.Values[i] = ec._Survey_createdAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+
+			out.Values[i] = ec._Survey_updatedAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3759,6 +4024,20 @@ func (ec *executionContext) _SurveyResponse(ctx context.Context, sel ast.Selecti
 		case "rating":
 
 			out.Values[i] = ec._SurveyResponse_rating(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createdAt":
+
+			out.Values[i] = ec._SurveyResponse_createdAt(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+
+			out.Values[i] = ec._SurveyResponse_updatedAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -4286,6 +4565,21 @@ func (ec *executionContext) marshalNSurveyResponse2ᚖgithubᚗcomᚋjbactadᚋl
 		return graphql.Null
 	}
 	return ec._SurveyResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

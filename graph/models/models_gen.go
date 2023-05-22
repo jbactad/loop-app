@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 type NewSurvey struct {
@@ -21,17 +22,21 @@ type NewSurveyResponse struct {
 }
 
 type Survey struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Question    string `json:"question"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Question    string    `json:"question"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type SurveyResponse struct {
-	ID     string  `json:"id"`
-	Survey *Survey `json:"survey"`
-	Answer string  `json:"answer"`
-	Rating int     `json:"rating"`
+	ID        string    `json:"id"`
+	Survey    *Survey   `json:"survey"`
+	Answer    string    `json:"answer"`
+	Rating    int       `json:"rating"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type Role string

@@ -6,8 +6,7 @@ import (
 	"github.com/jbactad/loop/domain"
 )
 
-//go:generate mockgen -source=../ports/ports.go -destination=../ports/mock/mock.go -package=mock
-
+//go:generate mockery --name=SurveyProvider --output=./mocks --outpkg=mocks --with-expecter
 type SurveyProvider interface {
 	GetSurveys(ctx context.Context, limit int, offset int) ([]*domain.Survey, error)
 }

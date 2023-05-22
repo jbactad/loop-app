@@ -11,6 +11,8 @@ type Survey {
     name: String!
     description: String!
     question: String!
+    createdAt: Time!
+    updatedAt: Time!
 }
 
 type SurveyResponse {
@@ -18,6 +20,8 @@ type SurveyResponse {
     survey: Survey!
     answer: String!
     rating: Int!
+    createdAt: Time!
+    updatedAt: Time!
 }
 
 enum Role {
