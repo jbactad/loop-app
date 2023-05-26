@@ -23,7 +23,7 @@ func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*
 		page = new(int)
 		*page = 0
 	}
-	result, err := r.QueryUseCases.GetSurveys(
+	result, err := r.Queries.GetSurveys(
 		ctx,
 		queries.GetSurveysQuery{
 			Limit: *limit,

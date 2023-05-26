@@ -7,6 +7,8 @@ import (
 
 func ProvideResolver(injector *do.Injector) {
 	do.Provide(injector, func(i *do.Injector) (*Resolver, error) {
-		return New(do.MustInvoke[queries.UseCases](i)), nil
+		return &Resolver{
+			Queries: do.MustInvoke[queries.UseCases](i),
+		}, nil
 	})
 }

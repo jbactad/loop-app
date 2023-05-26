@@ -8,13 +8,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jbactad/loop/application/commands"
 	"github.com/jbactad/loop/graph/generated"
 	"github.com/jbactad/loop/graph/models"
 )
 
 // CreateSurvey is the resolver for the createSurvey field.
 func (r *mutationResolver) CreateSurvey(ctx context.Context, input models.NewSurvey) (*models.Survey, error) {
-	panic(fmt.Errorf("not implemented: CreateSurvey - createSurvey"))
+	s, err := r.Commands.CreateSurvey(ctx, commands.CreateSurveyCommand{
+		Name:        input.Name,
+		Description: input.Description,
+		Question:    input.Question,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return SurveyToResponse(&s), nil
 }
 
 // CreateSurveyResponse is the resolver for the createSurveyResponse field.

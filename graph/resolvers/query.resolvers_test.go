@@ -108,7 +108,7 @@ func Test_queryResolver_Surveys(t *testing.T) {
 				tt.setup(qu)
 			}
 			rs := &resolvers.Resolver{
-				QueryUseCases: qu,
+				Queries: qu,
 			}
 			r := rs.Query()
 
