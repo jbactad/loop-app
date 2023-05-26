@@ -28,6 +28,11 @@ func NewRunServerCommand() *gcli.Command {
 }
 
 func RunServer(cmd *gcli.Command, args []string) error {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
 	injector := do.NewWithOpts(&do.InjectorOpts{})
 
 	err := ConfigureServices(injector)
@@ -35,13 +40,8 @@ func RunServer(cmd *gcli.Command, args []string) error {
 		return err
 	}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
-
 	r := do.MustInvoke[*resolvers.Resolver](injector)
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: r}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(*generated.NewConfig(r)))
 
 	http.Handle("/", playground.ApolloSandboxHandler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

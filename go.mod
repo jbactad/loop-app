@@ -38,6 +38,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.7.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.16.1 // indirect
 	github.com/aws/smithy-go v1.8.0 // indirect
+	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
