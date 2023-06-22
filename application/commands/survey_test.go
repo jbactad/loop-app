@@ -50,6 +50,45 @@ func TestCommands_CreateSurvey(t *testing.T) {
 			}(),
 			wantErr: assert.NoError,
 		},
+		{
+			name: "given a command with empty name, then return error",
+			args: args{
+				ctx: context.Background(),
+				cmd: commands.CreateSurveyCommand{
+					Name:        "",
+					Description: "Test Description",
+					Question:    "Test Question",
+				},
+			},
+			want:    domain.Survey{},
+			wantErr: assert.Error,
+		},
+		{
+			name: "given a command with empty description, then return error",
+			args: args{
+				ctx: context.Background(),
+				cmd: commands.CreateSurveyCommand{
+					Name:        "Test Survey",
+					Description: "",
+					Question:    "Test Question",
+				},
+			},
+			want:    domain.Survey{},
+			wantErr: assert.Error,
+		},
+		{
+			name: "given a command with empty question, then return error",
+			args: args{
+				ctx: context.Background(),
+				cmd: commands.CreateSurveyCommand{
+					Name:        "Test Survey",
+					Description: "Test Description",
+					Question:    "",
+				},
+			},
+			want:    domain.Survey{},
+			wantErr: assert.Error,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

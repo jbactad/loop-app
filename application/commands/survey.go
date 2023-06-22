@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jbactad/loop/domain"
 )
@@ -12,7 +13,22 @@ type CreateSurveyCommand struct {
 	Question    string
 }
 
+var (
+	ErrInvalidName        = errors.New("invalid name")
+	ErrInvalidDescription = errors.New("invalid description")
+	ErrInvalidQuestion    = errors.New("invalid question")
+)
+
 func (cs *Commands) CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (domain.Survey, error) {
+	if cmd.Name == "" {
+		return domain.Survey{}, ErrInvalidName
+	}
+	if cmd.Description == "" {
+		return domain.Survey{}, ErrInvalidDescription
+	}
+	if cmd.Question == "" {
+		return domain.Survey{}, ErrInvalidQuestion
+	}
 	now := cs.timeProvider.Now()
 	id := cs.uuidGenerator.Generate()
 
