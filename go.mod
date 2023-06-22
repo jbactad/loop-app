@@ -4,8 +4,10 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.31
+	github.com/gkampitakis/go-snaps v0.4.6
 	github.com/go-faker/faker/v4 v4.1.0
 	github.com/go-testfixtures/testfixtures/v3 v3.9.0
+	github.com/google/uuid v1.3.0
 	github.com/gookit/gcli/v3 v3.2.1
 	github.com/lib/pq v1.10.9
 	github.com/vektah/gqlparser/v2 v2.5.1
@@ -38,7 +40,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.7.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.16.1 // indirect
 	github.com/aws/smithy-go v1.8.0 // indirect
-	github.com/bradleyjkemp/cupaloy v2.3.0+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -54,6 +55,8 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v0.6.2 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
+	github.com/gkampitakis/ciinfo v0.2.4 // indirect
+	github.com/gkampitakis/go-diff v1.3.2 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
@@ -68,7 +71,6 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-github/v39 v39.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1 // indirect
 	github.com/gookit/color v1.5.2 // indirect
 	github.com/gookit/goutil v0.6.6 // indirect
@@ -92,6 +94,8 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/ktrysmt/go-bitbucket v0.6.4 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-ieproxy v0.0.1 // indirect
@@ -107,11 +111,16 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/snowflakedb/gosnowflake v1.6.3 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/xanzy/go-gitlab v0.15.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect

@@ -1,1 +1,3 @@
 scalar Time
+
+directive @hasRole(role: Role!) on FIELD_DEFINITION

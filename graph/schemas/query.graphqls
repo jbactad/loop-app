@@ -29,4 +29,3 @@ enum Role {
     EMPLOYEE
 }
 
-directive @hasRole(role: Role!) on FIELD_DEFINITION

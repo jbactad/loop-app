@@ -1,0 +1,29 @@
+
+[TestSurveys/with_valid_query,_it_should_return_surveys_without_error - 1]
+{
+ "Surveys": [
+  {
+   "CreatedAt": "",
+   "Description": "Survey 1 description",
+   "ID": "8138abe3-06b1-5882-88dd-ba931b388f1d",
+   "Name": "Survey 1",
+   "Question": "What is your favorite color?",
+   "UpdatedAt": ""
+  }
+ ]
+}
+---
+
+[TestCreateSurvey/with_valid_query,_it_should_return_survey_without_error - 1]
+{
+ "Errors": null,
+ "Survey": {
+  "CreatedAt": "",
+  "Description": "",
+  "ID": "",
+  "Name": "",
+  "Question": "",
+  "UpdatedAt": ""
+ }
+}
+---

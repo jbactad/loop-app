@@ -1,6 +1,6 @@
 graphql-gen:
 	@echo "Generating GraphQL code..."
-	@go run github.com/99designs/gqlgen generate
+	@./tools/gqlgen generate
 	@echo "Done!"
 
 generate:
@@ -11,4 +11,9 @@ generate:
 test-unit: generate
 	@echo "Running unit tests..."
 	@go test -v -cover ./...
+	@echo "Done!"
+
+dev-run:
+	@echo "Running dev server..."
+	@go run main.go graphql
 	@echo "Done!"
