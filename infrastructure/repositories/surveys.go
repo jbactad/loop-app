@@ -7,10 +7,6 @@ import (
 	"github.com/jbactad/loop/domain"
 )
 
-type SurveyRepository struct {
-	db Database
-}
-
 type SurveyData struct {
 	ID          string `gorm:"primaryKey"`
 	Name        string
@@ -22,6 +18,16 @@ type SurveyData struct {
 
 func (s SurveyData) ToDomain() *domain.Survey {
 	return domain.NewSurvey(s.ID, s.Name, s.Description, s.Question, s.CreatedAt, s.UpdatedAt)
+}
+
+type SurveyRepository struct {
+	db Database
+}
+
+func NewSurveyRepository(dbConn Database) *SurveyRepository {
+	return &SurveyRepository{
+		db: dbConn,
+	}
 }
 
 func (repo *SurveyRepository) GetSurveys(
@@ -45,8 +51,6 @@ func (repo *SurveyRepository) GetSurveys(
 	return surveys, nil
 }
 
-func NewSurveyRepository(dbConn Database) *SurveyRepository {
-	return &SurveyRepository{
-		db: dbConn,
-	}
+func (f *SurveyRepository) CreateSurvey(ctx context.Context, survey *domain.Survey) error {
+	panic("not implemented") // TODO: Implement
 }

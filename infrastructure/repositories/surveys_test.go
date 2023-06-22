@@ -98,3 +98,30 @@ func TestSurveyRepository_GetSurveys(t *testing.T) {
 		})
 	}
 }
+
+func TestSurveyRepository_CreateSurvey(t *testing.T) {
+	type fields struct {
+		db repositories.Database
+	}
+	type args struct {
+		ctx    context.Context
+		survey *domain.Survey
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := repositories.NewSurveyRepository(tt.fields.db)
+
+			if err := f.CreateSurvey(tt.args.ctx, tt.args.survey); (err != nil) != tt.wantErr {
+				t.Errorf("SurveyRepository.CreateSurvey() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
