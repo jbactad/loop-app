@@ -20,9 +20,9 @@ func TestCommands_CreateSurvey(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    domain.Survey
+		want    *domain.Survey
 		wantErr assert.ErrorAssertionFunc
-		setup   func(sm *mocks.SurveyManager, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider)
+		setup   func(sm *mocks.SurveyCreator, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider)
 	}{
 		{
 			name: "given a valid command, then return a survey",
@@ -34,7 +34,7 @@ func TestCommands_CreateSurvey(t *testing.T) {
 					Question:    "Test Question",
 				},
 			},
-			setup: func(sm *mocks.SurveyManager, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider) {
+			setup: func(sm *mocks.SurveyCreator, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider) {
 				uid := "test-uuid"
 				now := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 				ug.EXPECT().Generate().Return(uid).Once()
@@ -42,11 +42,11 @@ func TestCommands_CreateSurvey(t *testing.T) {
 				s := domain.NewSurvey(uid, "Test Survey", "Test Description", "Test Question", now, now)
 				sm.EXPECT().CreateSurvey(mock.IsType(context.Background()), s).Return(nil).Once()
 			},
-			want: func() domain.Survey {
+			want: func() *domain.Survey {
 				uid := "test-uuid"
 				now := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 				s := domain.NewSurvey(uid, "Test Survey", "Test Description", "Test Question", now, now)
-				return *s
+				return s
 			}(),
 			wantErr: assert.NoError,
 		},
@@ -60,7 +60,7 @@ func TestCommands_CreateSurvey(t *testing.T) {
 					Question:    "Test Question",
 				},
 			},
-			want:    domain.Survey{},
+			want:    nil,
 			wantErr: assert.Error,
 		},
 		{
@@ -73,7 +73,7 @@ func TestCommands_CreateSurvey(t *testing.T) {
 					Question:    "Test Question",
 				},
 			},
-			want:    domain.Survey{},
+			want:    nil,
 			wantErr: assert.Error,
 		},
 		{
@@ -86,13 +86,13 @@ func TestCommands_CreateSurvey(t *testing.T) {
 					Question:    "",
 				},
 			},
-			want:    domain.Survey{},
+			want:    nil,
 			wantErr: assert.Error,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			sm := mocks.NewSurveyManager(t)
+			sm := mocks.NewSurveyCreator(t)
 			ug := mocks.NewUUIDGenerator(t)
 			tp := mocks.NewTimeProvider(t)
 

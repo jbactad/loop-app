@@ -2,14 +2,17 @@ package generated_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/gkampitakis/go-snaps/snaps"
+	"github.com/jbactad/loop/application/ports/mocks"
+	"github.com/jbactad/loop/graph/models"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSurveys(t *testing.T) {
-	c := NewTestClient(t)
+	c := NewTestClient(t, mocks.NewTimeProvider(t), mocks.NewUUIDGenerator(t))
 
 	type args struct {
 		query string
@@ -32,7 +35,7 @@ func TestSurveys(t *testing.T) {
     question
   }
 }`,
-				limit: 10,
+				limit: 1,
 				page:  0,
 			},
 		},
@@ -85,11 +88,19 @@ func TestSurveys(t *testing.T) {
 }
 
 func TestCreateSurvey(t *testing.T) {
-	c := NewTestClient(t)
+	tn := time.Date(2023, 0o1, 27, 12, 0, 0, 0, time.UTC)
+	timeProvider := mocks.NewTimeProvider(t)
+	timeProvider.EXPECT().Now().Return(tn)
+
+	uid := "123e4567-e89b-12d3-a456-426614174000"
+	uuidGenerator := mocks.NewUUIDGenerator(t)
+	uuidGenerator.EXPECT().Generate().Return(uid)
+
+	c := NewTestClient(t, timeProvider, uuidGenerator)
 
 	type args struct {
 		query string
-		input string
+		input models.NewSurvey
 	}
 	tests := []struct {
 		name    string
@@ -109,30 +120,17 @@ func TestCreateSurvey(t *testing.T) {
     updatedAt
   }
 }`,
-				input: `{
-						"name": "Survey 1",
-						"description": "Survey 1 description",
-						"question": "Survey 1 question"
-					}`,
+				input: models.NewSurvey{
+					Name:        "Survey 1",
+					Description: "Survey 1 description",
+					Question:    "Survey 1 question",
+				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var resp struct {
-				Errors []struct {
-					Message string
-				}
-				Survey struct {
-					ID          string
-					Description string
-					Name        string
-					Question    string
-					CreatedAt   string
-					UpdatedAt   string
-				}
-			}
-
+			var resp map[string]interface{}
 			err := c.Post(tt.args.query, &resp, client.Var("input", tt.args.input))
 			if tt.wantErr != nil {
 				tt.wantErr(t, err)

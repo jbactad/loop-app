@@ -12,8 +12,8 @@ type SurveyProvider interface {
 	GetSurveys(ctx context.Context, limit int, offset int) ([]*domain.Survey, error)
 }
 
-//go:generate mockery --name=SurveyManager --output=./mocks --outpkg=mocks --with-expecter
-type SurveyManager interface {
+//go:generate mockery --name=SurveyCreator --output=./mocks --outpkg=mocks --with-expecter
+type SurveyCreator interface {
 	CreateSurvey(ctx context.Context, survey *domain.Survey) error
 }
 

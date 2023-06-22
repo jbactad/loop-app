@@ -9,18 +9,18 @@ import (
 
 //go:generate mockery --name UseCases --output ./mocks --filename commands.go --with-expecter
 type UseCases interface {
-	CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (domain.Survey, error)
+	CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (*domain.Survey, error)
 }
 
 type Commands struct {
-	manager       ports.SurveyManager
+	manager       ports.SurveyCreator
 	uuidGenerator ports.UUIDGenerator
 	timeProvider  ports.TimeProvider
 }
 
-func New(manager ports.SurveyManager, uuidGenerator ports.UUIDGenerator, timeProvider ports.TimeProvider) *Commands {
+func New(creator ports.SurveyCreator, uuidGenerator ports.UUIDGenerator, timeProvider ports.TimeProvider) *Commands {
 	return &Commands{
-		manager:       manager,
+		manager:       creator,
 		uuidGenerator: uuidGenerator,
 		timeProvider:  timeProvider,
 	}

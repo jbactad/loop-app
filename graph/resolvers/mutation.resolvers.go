@@ -24,7 +24,7 @@ func (r *mutationResolver) CreateSurvey(ctx context.Context, input models.NewSur
 		return nil, err
 	}
 
-	return SurveyToResponse(&s), nil
+	return SurveyToResponse(s), nil
 }
 
 // CreateSurveyResponse is the resolver for the createSurveyResponse field.
