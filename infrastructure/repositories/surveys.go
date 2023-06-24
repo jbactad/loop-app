@@ -16,6 +16,20 @@ type SurveyData struct {
 	UpdatedAt   time.Time
 }
 
+func NewSurveyData(
+	s *domain.Survey,
+) (obj *SurveyData) {
+	obj = &SurveyData{
+		ID:          s.ID(),
+		Name:        s.Name(),
+		Description: s.Description(),
+		Question:    s.Question(),
+		CreatedAt:   s.CreatedAt(),
+		UpdatedAt:   s.UpdatedAt(),
+	}
+	return
+}
+
 func (s SurveyData) ToDomain() *domain.Survey {
 	return domain.NewSurvey(s.ID, s.Name, s.Description, s.Question, s.CreatedAt, s.UpdatedAt)
 }
@@ -32,25 +46,27 @@ func NewSurveyRepository(dbConn Database) *SurveyRepository {
 
 func (repo *SurveyRepository) GetSurveys(
 	ctx context.Context, limit int, offset int,
-) (surveys []*domain.Survey, err error) {
-	var surveyDatas []*SurveyData
+) (res []*domain.Survey, err error) {
+	var ss []*SurveyData
 	err = repo.db.
 		Table("surveys").
 		Limit(limit).
 		Offset(offset).
-		Find(&surveyDatas).
+		Find(&ss).
 		Error()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, surveyData := range surveyDatas {
-		surveys = append(surveys, surveyData.ToDomain())
+	for _, s := range ss {
+		res = append(res, s.ToDomain())
 	}
 
-	return surveys, nil
+	return res, nil
 }
 
-func (f *SurveyRepository) CreateSurvey(ctx context.Context, survey *domain.Survey) error {
-	panic("not implemented") // TODO: Implement
+func (repo *SurveyRepository) CreateSurvey(ctx context.Context, survey *domain.Survey) error {
+	s := NewSurveyData(survey)
+
+	return repo.db.Table("surveys").Create(s).Error()
 }

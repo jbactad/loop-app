@@ -24,8 +24,3 @@ type SurveyResponse {
     updatedAt: Time!
 }
 
-enum Role {
-    MANAGER
-    EMPLOYEE
-}
-

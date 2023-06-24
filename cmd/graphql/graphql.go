@@ -60,7 +60,9 @@ func ConfigureServices(injector *do.Injector) error {
 	}
 
 	infrastructure.ProvideRepositories(injector)
+	infrastructure.ProvideServices(injector)
 	application.ProvideQueryUseCases(injector)
+	application.ProvideCommandUseCases(injector)
 	resolvers.ProvideResolver(injector)
 
 	return nil

@@ -44,7 +44,6 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -367,8 +366,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "../schemas/mutation.graphqls", Input: `type Mutation {
-    createSurvey(input: NewSurvey!): Survey! @hasRole(role: MANAGER)
-    createSurveyResponse(input: NewSurveyResponse!): SurveyResponse! @hasRole(role: EMPLOYEE)
+    createSurvey(input: NewSurvey!): Survey!
+    createSurveyResponse(input: NewSurveyResponse!): SurveyResponse!
 }
 
 input NewSurvey {
@@ -409,14 +408,15 @@ type SurveyResponse {
     updatedAt: Time!
 }
 
-enum Role {
-    MANAGER
-    EMPLOYEE
-}
-
-directive @hasRole(role: Role!) on FIELD_DEFINITION
 `, BuiltIn: false},
 	{Name: "../schemas/scalar.graphqls", Input: `scalar Time
+
+# directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+# enum Role {
+#     MANAGER
+#     EMPLOYEE
+# }
 `, BuiltIn: false},
 	{Name: "../schemas/subscription.graphqls", Input: `type Subscription {
     surveyCreated: Survey!
@@ -429,21 +429,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 models.Role
-	if tmp, ok := rawArgs["role"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
-		arg0, err = ec.unmarshalNRole2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐRole(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["role"] = arg0
-	return args, nil
-}
 
 func (ec *executionContext) field_Mutation_createSurveyResponse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -595,32 +580,8 @@ func (ec *executionContext) _Mutation_createSurvey(ctx context.Context, field gr
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateSurvey(rctx, fc.Args["input"].(models.NewSurvey))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐRole(ctx, "MANAGER")
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*models.Survey); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/jbactad/loop/graph/models.Survey`, tmp)
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateSurvey(rctx, fc.Args["input"].(models.NewSurvey))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -688,32 +649,8 @@ func (ec *executionContext) _Mutation_createSurveyResponse(ctx context.Context, 
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().CreateSurveyResponse(rctx, fc.Args["input"].(models.NewSurveyResponse))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐRole(ctx, "EMPLOYEE")
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*models.SurveyResponse); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/jbactad/loop/graph/models.SurveyResponse`, tmp)
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateSurveyResponse(rctx, fc.Args["input"].(models.NewSurveyResponse))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4424,16 +4361,6 @@ func (ec *executionContext) unmarshalNNewSurvey2githubᚗcomᚋjbactadᚋloopᚋ
 func (ec *executionContext) unmarshalNNewSurveyResponse2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐNewSurveyResponse(ctx context.Context, v interface{}) (models.NewSurveyResponse, error) {
 	res, err := ec.unmarshalInputNewSurveyResponse(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNRole2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐRole(ctx context.Context, v interface{}) (models.Role, error) {
-	var res models.Role
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNRole2githubᚗcomᚋjbactadᚋloopᚋgraphᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v models.Role) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

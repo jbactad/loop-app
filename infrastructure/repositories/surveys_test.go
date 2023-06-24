@@ -100,8 +100,10 @@ func TestSurveyRepository_GetSurveys(t *testing.T) {
 }
 
 func TestSurveyRepository_CreateSurvey(t *testing.T) {
-	type fields struct {
-		db repositories.Database
+	var survey domain.Survey
+	err := faker.FakeData(&survey)
+	if err != nil {
+		t.Error(err)
 	}
 	type args struct {
 		ctx    context.Context
@@ -109,15 +111,32 @@ func TestSurveyRepository_CreateSurvey(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		wantErr bool
+		setup   func(db *mocks.Database)
 	}{
-		// TODO: Add test cases.
+		{
+			name: "given a survey, then create a survey",
+			args: args{
+				ctx:    context.Background(),
+				survey: &survey,
+			},
+			setup: func(db *mocks.Database) {
+				db.EXPECT().Error().Times(1).Return(nil)
+				db.EXPECT().Table("surveys").Times(1).Return(db)
+				s := repositories.NewSurveyData(&survey)
+				db.EXPECT().Create(s).Times(1).Return(db)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := repositories.NewSurveyRepository(tt.fields.db)
+			db := mocks.NewDatabase(t)
+			if tt.setup != nil {
+				tt.setup(db)
+			}
+
+			f := repositories.NewSurveyRepository(db)
 
 			if err := f.CreateSurvey(tt.args.ctx, tt.args.survey); (err != nil) != tt.wantErr {
 				t.Errorf("SurveyRepository.CreateSurvey() error = %v, wantErr %v", err, tt.wantErr)

@@ -19,15 +19,15 @@ var (
 	ErrInvalidQuestion    = errors.New("invalid question")
 )
 
-func (cs *Commands) CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (domain.Survey, error) {
+func (cs *Commands) CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (*domain.Survey, error) {
 	if cmd.Name == "" {
-		return domain.Survey{}, ErrInvalidName
+		return nil, ErrInvalidName
 	}
 	if cmd.Description == "" {
-		return domain.Survey{}, ErrInvalidDescription
+		return nil, ErrInvalidDescription
 	}
 	if cmd.Question == "" {
-		return domain.Survey{}, ErrInvalidQuestion
+		return nil, ErrInvalidQuestion
 	}
 	now := cs.timeProvider.Now()
 	id := cs.uuidGenerator.Generate()
@@ -36,8 +36,8 @@ func (cs *Commands) CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (
 
 	err := cs.manager.CreateSurvey(ctx, s)
 	if err != nil {
-		return domain.Survey{}, err
+		return nil, err
 	}
 
-	return *s, nil
+	return s, nil
 }

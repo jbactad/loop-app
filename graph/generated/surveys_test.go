@@ -2,15 +2,16 @@ package generated_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/99designs/gqlgen/client"
 	"github.com/gkampitakis/go-snaps/snaps"
+	"github.com/jbactad/loop/application/ports/mocks"
+	"github.com/jbactad/loop/graph/models"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSurveys(t *testing.T) {
-	c := NewTestClient(t)
-
 	type args struct {
 		query string
 		limit int
@@ -32,7 +33,7 @@ func TestSurveys(t *testing.T) {
     question
   }
 }`,
-				limit: 10,
+				limit: 1,
 				page:  0,
 			},
 		},
@@ -58,6 +59,8 @@ func TestSurveys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c := NewTestClient(t, mocks.NewTimeProvider(t), mocks.NewUUIDGenerator(t))
+
 			var resp struct {
 				Surveys []struct {
 					ID          string
@@ -85,16 +88,15 @@ func TestSurveys(t *testing.T) {
 }
 
 func TestCreateSurvey(t *testing.T) {
-	c := NewTestClient(t)
-
 	type args struct {
 		query string
-		input string
+		input models.NewSurvey
 	}
 	tests := []struct {
 		name    string
 		args    args
 		wantErr assert.ErrorAssertionFunc
+		setup   func(tp *mocks.TimeProvider, uig *mocks.UUIDGenerator)
 	}{
 		{
 			name: "with valid query, it should return survey without error",
@@ -109,30 +111,32 @@ func TestCreateSurvey(t *testing.T) {
     updatedAt
   }
 }`,
-				input: `{
-						"name": "Survey 1",
-						"description": "Survey 1 description",
-						"question": "Survey 1 question"
-					}`,
+				input: models.NewSurvey{
+					Name:        "Survey 1",
+					Description: "Survey 1 description",
+					Question:    "Survey 1 question",
+				},
+			},
+			setup: func(tp *mocks.TimeProvider, uig *mocks.UUIDGenerator) {
+				tn := time.Date(2023, 1, 27, 12, 0, 0, 0, time.UTC)
+				tp.EXPECT().Now().Return(tn)
+				uid := "123e4567-e89b-12d3-a456-426614174000"
+				uig.EXPECT().Generate().Return(uid)
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var resp struct {
-				Errors []struct {
-					Message string
-				}
-				Survey struct {
-					ID          string
-					Description string
-					Name        string
-					Question    string
-					CreatedAt   string
-					UpdatedAt   string
-				}
+			timeProvider := mocks.NewTimeProvider(t)
+			uuidGenerator := mocks.NewUUIDGenerator(t)
+
+			c := NewTestClient(t, timeProvider, uuidGenerator)
+
+			if tt.setup != nil {
+				tt.setup(timeProvider, uuidGenerator)
 			}
 
+			var resp map[string]interface{}
 			err := c.Post(tt.args.query, &resp, client.Var("input", tt.args.input))
 			if tt.wantErr != nil {
 				tt.wantErr(t, err)
