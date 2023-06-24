@@ -2,6 +2,7 @@ package commands_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -58,6 +59,21 @@ func TestCommands_CreateSurveyResponse(t *testing.T) {
 				srcp.EXPECT().CreateSurveyResponse(defaultCtx, sr).Return(nil).Once()
 			},
 			wantErr: assert.NoError,
+		},
+		{
+			name: "given an invalid survey id, then return an error",
+			args: args{
+				ctx: defaultCtx,
+				cmd: commands.CreateSurveyResponseCommand{
+					SurveyID: "test-survey-id",
+					Answer:   "Test Answer",
+					Rating:   5,
+				},
+			},
+			setup: func(scp *mocks.SurveyCreatorProvider, srcp *mocks.SurveyResponseCreatorProvider, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider) {
+				scp.EXPECT().GetSurvey(defaultCtx, "test-survey-id").Return(nil, errors.New("not found!")).Once()
+			},
+			wantErr: assert.Error,
 		},
 	}
 	for _, tt := range tests {
