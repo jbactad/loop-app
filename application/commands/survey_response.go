@@ -13,12 +13,24 @@ type CreateSurveyResponseCommand struct {
 	Rating   int
 }
 
-var ErrInvalidSurveyID = errors.New("invalid survey id")
+var (
+	ErrInvalidSurveyID = errors.New("invalid survey id")
+	ErrSurveyNotFound  = errors.New("survey not found")
+	ErrInvalidRating   = errors.New("invalid rating")
+)
 
-func (cs *Commands) CreateSurveyResponse(ctx context.Context, cmd CreateSurveyResponseCommand) (*domain.SurveyResponse, error) {
+func (cs *Commands) CreateSurveyResponse(
+	ctx context.Context, cmd CreateSurveyResponseCommand,
+) (*domain.SurveyResponse, error) {
+	if cmd.SurveyID == "" {
+		return nil, ErrInvalidSurveyID
+	}
+	if cmd.Rating < 0 || cmd.Rating > 5 {
+		return nil, ErrInvalidRating
+	}
 	s, err := cs.surveyCreatorProvider.GetSurvey(ctx, cmd.SurveyID)
 	if err != nil {
-		return nil, ErrInvalidSurveyID
+		return nil, ErrSurveyNotFound
 	}
 
 	i := cs.uuidGenerator.Generate()

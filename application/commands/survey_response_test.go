@@ -62,7 +62,7 @@ func TestCommands_CreateSurveyResponse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name: "given an invalid survey id, then return an error",
+			name: "given an survey not found, then return an error",
 			args: args{
 				ctx: defaultCtx,
 				cmd: commands.CreateSurveyResponseCommand{
@@ -92,6 +92,30 @@ func TestCommands_CreateSurveyResponse(t *testing.T) {
 
 				scp.EXPECT().GetSurvey(defaultCtx, "test-survey-id").Return(nil, nil).Once()
 				srcp.EXPECT().CreateSurveyResponse(defaultCtx, mock.Anything).Return(errors.New("error creating survey response")).Once()
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "given an invalid survey id, then return an error",
+			args: args{
+				ctx: defaultCtx,
+				cmd: commands.CreateSurveyResponseCommand{
+					SurveyID: "",
+					Answer:   "Test Answer",
+					Rating:   -1,
+				},
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "given an invalid rating, then return an error",
+			args: args{
+				ctx: defaultCtx,
+				cmd: commands.CreateSurveyResponseCommand{
+					SurveyID: "test-survey-id",
+					Answer:   "Test Answer",
+					Rating:   -1,
+				},
 			},
 			wantErr: assert.Error,
 		},
