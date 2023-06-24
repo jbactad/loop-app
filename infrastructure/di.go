@@ -21,6 +21,9 @@ func ProvideServices(injector *do.Injector) error {
 }
 
 func ProvideRepositories(injector *do.Injector) {
+	do.Provide(injector, func(i *do.Injector) (ports.SurveyCreatorProvider, error) {
+		return repositories.NewSurveyRepository(do.MustInvoke[repositories.Database](i)), nil
+	})
 	do.Provide(injector, func(i *do.Injector) (ports.SurveyProvider, error) {
 		return repositories.NewSurveyRepository(do.MustInvoke[repositories.Database](i)), nil
 	})
