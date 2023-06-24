@@ -12,8 +12,6 @@ import (
 )
 
 func TestSurveys(t *testing.T) {
-	c := NewTestClient(t, mocks.NewTimeProvider(t), mocks.NewUUIDGenerator(t))
-
 	type args struct {
 		query string
 		limit int
@@ -61,6 +59,8 @@ func TestSurveys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c := NewTestClient(t, mocks.NewTimeProvider(t), mocks.NewUUIDGenerator(t))
+
 			var resp struct {
 				Surveys []struct {
 					ID          string
@@ -88,16 +88,6 @@ func TestSurveys(t *testing.T) {
 }
 
 func TestCreateSurvey(t *testing.T) {
-	tn := time.Date(2023, 0o1, 27, 12, 0, 0, 0, time.UTC)
-	timeProvider := mocks.NewTimeProvider(t)
-	timeProvider.EXPECT().Now().Return(tn)
-
-	uid := "123e4567-e89b-12d3-a456-426614174000"
-	uuidGenerator := mocks.NewUUIDGenerator(t)
-	uuidGenerator.EXPECT().Generate().Return(uid)
-
-	c := NewTestClient(t, timeProvider, uuidGenerator)
-
 	type args struct {
 		query string
 		input models.NewSurvey
@@ -106,6 +96,7 @@ func TestCreateSurvey(t *testing.T) {
 		name    string
 		args    args
 		wantErr assert.ErrorAssertionFunc
+		setup   func(tp *mocks.TimeProvider, uig *mocks.UUIDGenerator)
 	}{
 		{
 			name: "with valid query, it should return survey without error",
@@ -126,10 +117,25 @@ func TestCreateSurvey(t *testing.T) {
 					Question:    "Survey 1 question",
 				},
 			},
+			setup: func(tp *mocks.TimeProvider, uig *mocks.UUIDGenerator) {
+				tn := time.Date(2023, 1, 27, 12, 0, 0, 0, time.UTC)
+				tp.EXPECT().Now().Return(tn)
+				uid := "123e4567-e89b-12d3-a456-426614174000"
+				uig.EXPECT().Generate().Return(uid)
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			timeProvider := mocks.NewTimeProvider(t)
+			uuidGenerator := mocks.NewUUIDGenerator(t)
+
+			c := NewTestClient(t, timeProvider, uuidGenerator)
+
+			if tt.setup != nil {
+				tt.setup(timeProvider, uuidGenerator)
+			}
+
 			var resp map[string]interface{}
 			err := c.Post(tt.args.query, &resp, client.Var("input", tt.args.input))
 			if tt.wantErr != nil {

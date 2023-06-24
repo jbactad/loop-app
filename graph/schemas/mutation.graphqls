@@ -1,6 +1,6 @@
 type Mutation {
-    createSurvey(input: NewSurvey!): Survey! @hasRole(role: MANAGER)
-    createSurveyResponse(input: NewSurveyResponse!): SurveyResponse! @hasRole(role: EMPLOYEE)
+    createSurvey(input: NewSurvey!): Survey!
+    createSurveyResponse(input: NewSurveyResponse!): SurveyResponse!
 }
 
 input NewSurvey {
