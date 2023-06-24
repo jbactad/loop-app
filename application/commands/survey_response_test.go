@@ -10,6 +10,7 @@ import (
 	"github.com/jbactad/loop/application/ports/mocks"
 	"github.com/jbactad/loop/domain"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestCommands_CreateSurveyResponse(t *testing.T) {
@@ -71,7 +72,26 @@ func TestCommands_CreateSurveyResponse(t *testing.T) {
 				},
 			},
 			setup: func(scp *mocks.SurveyCreatorProvider, srcp *mocks.SurveyResponseCreatorProvider, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider) {
-				scp.EXPECT().GetSurvey(defaultCtx, "test-survey-id").Return(nil, errors.New("not found!")).Once()
+				scp.EXPECT().GetSurvey(mock.Anything, "test-survey-id").Return(nil, errors.New("not found!")).Once()
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "given an error creating survey response, then return an error",
+			args: args{
+				ctx: defaultCtx,
+				cmd: commands.CreateSurveyResponseCommand{
+					SurveyID: "test-survey-id",
+					Answer:   "Test Answer",
+					Rating:   5,
+				},
+			},
+			setup: func(scp *mocks.SurveyCreatorProvider, srcp *mocks.SurveyResponseCreatorProvider, ug *mocks.UUIDGenerator, tp *mocks.TimeProvider) {
+				ug.EXPECT().Generate().Return("").Once()
+				tp.EXPECT().Now().Return(now).Once()
+
+				scp.EXPECT().GetSurvey(defaultCtx, "test-survey-id").Return(nil, nil).Once()
+				srcp.EXPECT().CreateSurveyResponse(defaultCtx, mock.Anything).Return(errors.New("error creating survey response")).Once()
 			},
 			wantErr: assert.Error,
 		},

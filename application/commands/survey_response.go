@@ -25,7 +25,10 @@ func (cs *Commands) CreateSurveyResponse(ctx context.Context, cmd CreateSurveyRe
 	n := cs.timeProvider.Now()
 	sr := domain.NewSurveyResponse(i, s, cmd.Answer, cmd.Rating, n, n)
 
-	_ = cs.surveyResponseCreatorProvider.CreateSurveyResponse(ctx, sr)
+	err = cs.surveyResponseCreatorProvider.CreateSurveyResponse(ctx, sr)
+	if err != nil {
+		return nil, err
+	}
 
 	return sr, nil
 }
