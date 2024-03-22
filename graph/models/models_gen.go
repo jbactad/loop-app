@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+type Mutation struct {
+}
+
 type NewSurvey struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -16,6 +19,12 @@ type NewSurveyResponse struct {
 	SurveyID string `json:"surveyId"`
 	Answers  string `json:"answers"`
 	Rating   int    `json:"rating"`
+}
+
+type Query struct {
+}
+
+type Subscription struct {
 }
 
 type Survey struct {
