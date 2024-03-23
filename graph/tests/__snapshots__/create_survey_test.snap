@@ -1,0 +1,13 @@
+
+[TestCreateSurvey/with_valid_query,_it_should_return_survey_without_error - 1]
+{
+ "createSurvey": {
+  "createdAt": "2023-01-27T12:00:00Z",
+  "description": "Survey 1 description",
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Survey 1",
+  "question": "Survey 1 question",
+  "updatedAt": "2023-01-27T12:00:00Z"
+ }
+}
+---
