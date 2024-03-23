@@ -2,21 +2,10 @@ package queries
 
 import (
 	"context"
-
-	"github.com/jbactad/loop/domain"
 )
 
 type ErrInvalidQuery struct {
 	error
-}
-
-type GetSurveysQuery struct {
-	Limit int
-	Page  int
-}
-
-type GetSurveysQueryResponse struct {
-	Surveys []*domain.Survey
 }
 
 func (qs *Queries) GetSurveys(ctx context.Context, request GetSurveysQuery) (GetSurveysQueryResponse, error) {
@@ -31,5 +20,20 @@ func (qs *Queries) GetSurveys(ctx context.Context, request GetSurveysQuery) (Get
 
 	return GetSurveysQueryResponse{
 		Surveys: surveys,
+	}, nil
+}
+
+func (qs *Queries) GetSurveyByID(ctx context.Context, request GetSurveyByIdQuery) (GetSurveyByIdQueryResponse, error) {
+	if request.Id == "" {
+		return GetSurveyByIdQueryResponse{}, ErrInvalidQuery{}
+	}
+
+	survey, err := qs.repo.GetSurvey(ctx, request.Id)
+	if err != nil {
+		return GetSurveyByIdQueryResponse{}, err
+	}
+
+	return GetSurveyByIdQueryResponse{
+		Survey: survey,
 	}, nil
 }
