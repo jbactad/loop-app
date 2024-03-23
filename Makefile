@@ -13,9 +13,35 @@ test-unit: graphql-gen generate
 	@go test -v -cover ./...
 	@echo "Done!"
 
-dev-run:
+run:
 	@echo "Running dev server..."
 	@go run main.go graphql
+	@echo "Done!"
+
+dep-up:
+	@echo "Starting dependencies..."
+	@docker-compose up -d
+	@echo "Done!"
+
+dep-down:
+	@echo "Stopping dependencies..."
+	@docker-compose down -v 
+	@echo "Done!"
+
+db-migrate:
+	@echo "Running migrations..."
+	@go run main.go db migrate
+	@echo "Done!"
+	
+db-rollback:
+	@echo "Rolling back migrations..."
+	@go run main.go db rollback
+	@echo "Done!"
+
+db-seed:
+	@echo
+	@echo "Seeding database..."
+	@go run main.go db seed
 	@echo "Done!"
 
 setup:
