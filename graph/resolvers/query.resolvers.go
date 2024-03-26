@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jbactad/loop/application/queries"
 	"github.com/jbactad/loop/graph/generated"
 	"github.com/jbactad/loop/graph/models"
@@ -41,6 +42,9 @@ func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*
 
 // Survey is the resolver for the survey field.
 func (r *queryResolver) Survey(ctx context.Context, id string) (*models.Survey, error) {
+	if id == "" || uuid.Validate(id) != nil {
+		return nil, fmt.Errorf("id is required")
+	}
 	result, err := r.Queries.GetSurveyByID(
 		ctx,
 		queries.GetSurveyByIdQuery{

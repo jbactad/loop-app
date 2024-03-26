@@ -51,7 +51,11 @@ func TestSurvey(t *testing.T) {
 				}`,
 				id: "",
 			},
-			wantErr: assert.Error,
+			wantErr: func(tt assert.TestingT, err error, i ...interface{}) bool {
+				assert.Error(tt, err)
+				assert.Contains(tt, err.Error(), "graphql: missing required query variable")
+				return true
+			},
 		},
 	}
 	for _, tt := range testCases {
