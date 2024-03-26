@@ -15,19 +15,19 @@ import (
 
 // Surveys is the resolver for the surveys field.
 func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*models.Survey, error) {
-	if limit == nil {
-		limit = new(int)
-		*limit = 10
+	l := 10
+	p := 0
+	if limit != nil {
+		l = *limit
 	}
-	if page == nil {
-		page = new(int)
-		*page = 0
+	if page != nil {
+		p = *page
 	}
 	result, err := r.Queries.GetSurveys(
 		ctx,
 		queries.GetSurveysQuery{
-			Limit: *limit,
-			Page:  *page,
+			Limit: l,
+			Page:  p,
 		},
 	)
 	if err != nil {
@@ -41,7 +41,19 @@ func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*
 
 // Survey is the resolver for the survey field.
 func (r *queryResolver) Survey(ctx context.Context, id string) (*models.Survey, error) {
-	panic(fmt.Errorf("not implemented: Survey - survey"))
+	result, err := r.Queries.GetSurveyByID(
+		ctx,
+		queries.GetSurveyByIdQuery{
+			Id: id,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	survey := SurveyToResponse(result.Survey)
+
+	return survey, nil
 }
 
 // SurveyResponses is the resolver for the surveyResponses field.

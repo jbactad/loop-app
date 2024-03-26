@@ -86,3 +86,64 @@ func TestQueries_GetSurveys(t *testing.T) {
 		})
 	}
 }
+
+func TestQueries_GetSurveyByID(t *testing.T) {
+	ctx := context.Background()
+	validSurvey := &domain.Survey{}
+	faker.FakeData(validSurvey)
+	type args struct {
+		request queries.GetSurveyByIdQuery
+	}
+	tests := []struct {
+		name    string
+		args    args
+		setup   func(sp *mocks.SurveyProvider)
+		want    queries.GetSurveyByIdQueryResponse
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "given valid query, it should return survey without error",
+			args: args{
+				request: queries.GetSurveyByIdQuery{
+					// random uuid
+					Id: "f4b3b3b3-4b3b-4b3b-4b3b-4b3b3b3b3b3b",
+				},
+			},
+			setup: func(sp *mocks.SurveyProvider) {
+				sp.EXPECT().GetSurvey(mock.IsType(context.Background()), "f4b3b3b3-4b3b-4b3b-4b3b-4b3b3b3b3b3b").
+					Return(validSurvey, nil)
+			},
+			want: queries.GetSurveyByIdQueryResponse{
+				Survey: validSurvey,
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "given invalid query, it should return error",
+			args: args{
+				request: queries.GetSurveyByIdQuery{
+					Id: "",
+				},
+			},
+			want:    queries.GetSurveyByIdQueryResponse{},
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sp := mocks.NewSurveyProvider(t)
+			if tt.setup != nil {
+				tt.setup(sp)
+			}
+
+			qs := queries.New(sp)
+			got, err := qs.GetSurveyByID(ctx, tt.args.request)
+
+			if !tt.wantErr(t, err) {
+				t.Errorf("Queries.GetSurveyById() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			assert.EqualValuesf(t, got, tt.want, "Queries.GetSurveyById() = %v, want %v", got, tt.want)
+		})
+	}
+}

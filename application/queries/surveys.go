@@ -2,34 +2,43 @@ package queries
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
-	"github.com/jbactad/loop/domain"
+	"github.com/google/uuid"
 )
 
-type ErrInvalidQuery struct {
-	error
-}
-
-type GetSurveysQuery struct {
-	Limit int
-	Page  int
-}
-
-type GetSurveysQueryResponse struct {
-	Surveys []*domain.Survey
-}
+var (
+	ErrInvalidLimitOrOffset = errors.New("invalid limit or offset")
+	ErrInvalidId            = errors.New("invalid id")
+)
 
 func (qs *Queries) GetSurveys(ctx context.Context, request GetSurveysQuery) (GetSurveysQueryResponse, error) {
 	if (request.Limit < 0) || (request.Page < 0) {
-		return GetSurveysQueryResponse{}, ErrInvalidQuery{}
+		return GetSurveysQueryResponse{}, ErrInvalidLimitOrOffset
 	}
 
 	surveys, err := qs.repo.GetSurveys(ctx, request.Limit, request.Page)
 	if err != nil {
-		return GetSurveysQueryResponse{}, err
+		return GetSurveysQueryResponse{}, fmt.Errorf("error getting surveys: %w", err)
 	}
 
 	return GetSurveysQueryResponse{
 		Surveys: surveys,
+	}, nil
+}
+
+func (qs *Queries) GetSurveyByID(ctx context.Context, request GetSurveyByIdQuery) (GetSurveyByIdQueryResponse, error) {
+	if uuid.Validate(request.Id) != nil {
+		return GetSurveyByIdQueryResponse{}, ErrInvalidId
+	}
+
+	survey, err := qs.repo.GetSurvey(ctx, request.Id)
+	if err != nil {
+		return GetSurveyByIdQueryResponse{}, fmt.Errorf("error getting survey: %w", err)
+	}
+
+	return GetSurveyByIdQueryResponse{
+		Survey: survey,
 	}, nil
 }

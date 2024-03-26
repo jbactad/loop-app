@@ -1,4 +1,4 @@
-package tests_test
+package tests
 
 import (
 	"testing"
@@ -47,6 +47,7 @@ func TestCreateSurvey(t *testing.T) {
 				uid := "123e4567-e89b-12d3-a456-426614174000"
 				uig.EXPECT().Generate().Return(uid)
 			},
+			wantErr: assert.NoError,
 		},
 	}
 	for _, tt := range tests {
@@ -62,8 +63,7 @@ func TestCreateSurvey(t *testing.T) {
 
 			var resp map[string]interface{}
 			err := c.Post(tt.args.query, &resp, client.Var("input", tt.args.input))
-			if tt.wantErr != nil {
-				tt.wantErr(t, err)
+			if !tt.wantErr(t, err) {
 				return
 			}
 

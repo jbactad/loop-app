@@ -10,6 +10,7 @@ import (
 	"github.com/jbactad/loop/domain"
 	"github.com/jbactad/loop/infrastructure/repositories"
 	"github.com/jbactad/loop/infrastructure/repositories/mocks"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -146,9 +147,12 @@ func TestSurveyRepository_CreateSurvey(t *testing.T) {
 }
 
 func TestSurveyRepository_GetSurvey(t *testing.T) {
+	testSurveyData := &repositories.SurveyData{}
+	faker.FakeData(testSurveyData)
+	validId := faker.UUIDDigit()
+	ctx := context.Background()
 	type args struct {
-		ctx context.Context
-		id  string
+		id string
 	}
 	tests := []struct {
 		name    string
@@ -157,7 +161,40 @@ func TestSurveyRepository_GetSurvey(t *testing.T) {
 		wantErr bool
 		setup   func(db *mocks.Database)
 	}{
-		// TODO: Add test cases.
+		{
+			name: "given db returns the survey data, then return a survey",
+			args: args{
+				id: validId,
+			},
+			setup: func(db *mocks.Database) {
+				db.EXPECT().Table("surveys").Times(1).Return(db)
+				db.EXPECT().
+					First(mock.IsType(&repositories.SurveyData{}), "id = ?", validId).
+					Run(func(dest interface{}, conds ...interface{}) {
+						reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(testSurveyData).Elem())
+					}).
+					Times(1).
+					Return(db)
+				db.EXPECT().Error().Times(1).Return(nil)
+			},
+			want: testSurveyData.ToDomain(),
+		},
+		{
+			name: "given db returns an error, then return an error",
+			args: args{
+				id: validId,
+			},
+			setup: func(db *mocks.Database) {
+				db.EXPECT().Table("surveys").Times(1).Return(db)
+				db.EXPECT().
+					First(mock.Anything, mock.Anything, mock.Anything).
+					Times(1).
+					Return(db)
+				db.EXPECT().Error().Times(1).Return(errors.New("error happened"))
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -168,14 +205,12 @@ func TestSurveyRepository_GetSurvey(t *testing.T) {
 
 			repo := repositories.NewSurveyRepository(db)
 
-			got, err := repo.GetSurvey(tt.args.ctx, tt.args.id)
+			got, err := repo.GetSurvey(ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SurveyRepository.GetSurvey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SurveyRepository.GetSurvey() = %v, want %v", got, tt.want)
-			}
+			assert.EqualValuesf(t, tt.want, got, "SurveyRepository.GetSurvey() = %v, want %v", got, tt.want)
 		})
 	}
 }
