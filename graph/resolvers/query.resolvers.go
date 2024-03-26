@@ -15,19 +15,19 @@ import (
 
 // Surveys is the resolver for the surveys field.
 func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*models.Survey, error) {
-	if limit == nil {
-		limit = new(int)
-		*limit = 10
+	l := 10
+	p := 0
+	if limit != nil {
+		l = *limit
 	}
-	if page == nil {
-		page = new(int)
-		*page = 0
+	if page != nil {
+		p = *page
 	}
 	result, err := r.Queries.GetSurveys(
 		ctx,
 		queries.GetSurveysQuery{
-			Limit: *limit,
-			Page:  *page,
+			Limit: l,
+			Page:  p,
 		},
 	)
 	if err != nil {
