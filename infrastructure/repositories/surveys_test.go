@@ -169,7 +169,7 @@ func TestSurveyRepository_GetSurvey(t *testing.T) {
 			setup: func(db *mocks.Database) {
 				db.EXPECT().Table("surveys").Times(1).Return(db)
 				db.EXPECT().
-					First(mock.IsType(&repositories.SurveyData{}), validId).
+					First(mock.IsType(&repositories.SurveyData{}), "id = ?", validId).
 					Run(func(dest interface{}, conds ...interface{}) {
 						reflect.ValueOf(dest).Elem().Set(reflect.ValueOf(testSurveyData).Elem())
 					}).
@@ -187,7 +187,7 @@ func TestSurveyRepository_GetSurvey(t *testing.T) {
 			setup: func(db *mocks.Database) {
 				db.EXPECT().Table("surveys").Times(1).Return(db)
 				db.EXPECT().
-					First(mock.IsType(&repositories.SurveyData{}), validId).
+					First(mock.Anything, mock.Anything, mock.Anything).
 					Times(1).
 					Return(db)
 				db.EXPECT().Error().Times(1).Return(errors.New("error happened"))

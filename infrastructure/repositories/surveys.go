@@ -73,7 +73,7 @@ func (repo *SurveyRepository) CreateSurvey(ctx context.Context, survey *domain.S
 
 func (repo *SurveyRepository) GetSurvey(ctx context.Context, id string) (*domain.Survey, error) {
 	s := &SurveyData{}
-	err := repo.db.Table("surveys").First(s, id).Error()
+	err := repo.db.Table("surveys").First(s, "id = ?", id).Error()
 	if err != nil {
 		return nil, err
 	}
