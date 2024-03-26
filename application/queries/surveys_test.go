@@ -99,7 +99,7 @@ func TestQueries_GetSurveyByID(t *testing.T) {
 		args    args
 		setup   func(sp *mocks.SurveyProvider)
 		want    queries.GetSurveyByIdQueryResponse
-		wantErr bool
+		wantErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "given valid query, it should return survey without error",
@@ -116,7 +116,7 @@ func TestQueries_GetSurveyByID(t *testing.T) {
 			want: queries.GetSurveyByIdQueryResponse{
 				Survey: validSurvey,
 			},
-			wantErr: false,
+			wantErr: assert.NoError,
 		},
 		{
 			name: "given invalid query, it should return error",
@@ -126,7 +126,7 @@ func TestQueries_GetSurveyByID(t *testing.T) {
 				},
 			},
 			want:    queries.GetSurveyByIdQueryResponse{},
-			wantErr: true,
+			wantErr: assert.Error,
 		},
 	}
 	for _, tt := range tests {
@@ -139,7 +139,7 @@ func TestQueries_GetSurveyByID(t *testing.T) {
 			qs := queries.New(sp)
 			got, err := qs.GetSurveyByID(ctx, tt.args.request)
 
-			if (err != nil) != tt.wantErr {
+			if !tt.wantErr(t, err) {
 				t.Errorf("Queries.GetSurveyById() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
