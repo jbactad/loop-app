@@ -41,7 +41,19 @@ func (r *queryResolver) Surveys(ctx context.Context, limit *int, page *int) ([]*
 
 // Survey is the resolver for the survey field.
 func (r *queryResolver) Survey(ctx context.Context, id string) (*models.Survey, error) {
-	panic(fmt.Errorf("not implemented: Survey - survey"))
+	result, err := r.Queries.GetSurveyByID(
+		ctx,
+		queries.GetSurveyByIdQuery{
+			Id: id,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	survey := SurveyToResponse(result.Survey)
+
+	return survey, nil
 }
 
 // SurveyResponses is the resolver for the surveyResponses field.
