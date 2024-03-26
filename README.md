@@ -1,6 +1,8 @@
 # loop-app
 A simple pulse-survey application.
 
+The goal of the project is to implement the [Hexagonal Architecture](https://jmgarridopaz.github.io/content/hexagonalarchitecture.html)
+
 ## Getting Started
 ### Prerequisites
 - [Go](https://golang.org/)
