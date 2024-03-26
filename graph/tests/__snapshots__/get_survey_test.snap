@@ -1,0 +1,26 @@
+
+[TestSurvey/given_valid_query,_should_return_surveys_without_error - 1]
+{
+ "Survey": {
+  "CreatedAt": "2019-01-01T00:00:00Z",
+  "Description": "Survey 1 description",
+  "ID": "8138abe3-06b1-5882-88dd-ba931b388f1d",
+  "Name": "Survey 1",
+  "Question": "What is your favorite color?",
+  "UpdatedAt": "2019-02-01T00:00:00Z"
+ }
+}
+---
+
+[TestSurvey/given_invalid_query,_should_return_error - 1]
+{
+ "Survey": {
+  "CreatedAt": "",
+  "Description": "",
+  "ID": "",
+  "Name": "",
+  "Question": "",
+  "UpdatedAt": ""
+ }
+}
+---

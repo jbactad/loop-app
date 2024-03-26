@@ -13,3 +13,9 @@
  ]
 }
 ---
+
+[TestSurveys/with_invalid_query,_it_should_return_error - 1]
+{
+ "Surveys": null
+}
+---
