@@ -3,6 +3,7 @@ package queries
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ func (qs *Queries) GetSurveys(ctx context.Context, request GetSurveysQuery) (Get
 
 	surveys, err := qs.repo.GetSurveys(ctx, request.Limit, request.Page)
 	if err != nil {
-		return GetSurveysQueryResponse{}, err
+		return GetSurveysQueryResponse{}, fmt.Errorf("error getting surveys: %w", err)
 	}
 
 	return GetSurveysQueryResponse{
@@ -34,7 +35,7 @@ func (qs *Queries) GetSurveyByID(ctx context.Context, request GetSurveyByIdQuery
 
 	survey, err := qs.repo.GetSurvey(ctx, request.Id)
 	if err != nil {
-		return GetSurveyByIdQueryResponse{}, err
+		return GetSurveyByIdQueryResponse{}, fmt.Errorf("error getting survey: %w", err)
 	}
 
 	return GetSurveyByIdQueryResponse{

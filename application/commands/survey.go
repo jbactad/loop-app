@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jbactad/loop/domain"
 )
@@ -36,7 +37,7 @@ func (cs *Commands) CreateSurvey(ctx context.Context, cmd CreateSurveyCommand) (
 
 	err := cs.surveyCreatorProvider.CreateSurvey(ctx, s)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating survey: %w", err)
 	}
 
 	return s, nil
