@@ -2,6 +2,9 @@ package queries
 
 import (
 	"context"
+	"errors"
+
+	"github.com/google/uuid"
 )
 
 type ErrInvalidQuery struct {
@@ -24,8 +27,8 @@ func (qs *Queries) GetSurveys(ctx context.Context, request GetSurveysQuery) (Get
 }
 
 func (qs *Queries) GetSurveyByID(ctx context.Context, request GetSurveyByIdQuery) (GetSurveyByIdQueryResponse, error) {
-	if request.Id == "" {
-		return GetSurveyByIdQueryResponse{}, ErrInvalidQuery{}
+	if uuid.Validate(request.Id) != nil {
+		return GetSurveyByIdQueryResponse{}, ErrInvalidQuery{errors.New("id is required")}
 	}
 
 	survey, err := qs.repo.GetSurvey(ctx, request.Id)

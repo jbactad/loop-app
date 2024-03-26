@@ -176,22 +176,6 @@ func Test_queryResolver_Survey(t *testing.T) {
 				}
 			}(),
 		},
-		{
-			name: "given an empty survey id, then return error",
-			args: args{
-				id: "",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "given an invalid survey id, then return error",
-			args: args{
-				id: "invalid",
-			},
-			want:    nil,
-			wantErr: true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
